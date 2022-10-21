@@ -1,0 +1,80 @@
+version: "3.9"
+services:
+  # image micro-notification
+  micro_notification:
+    build:
+      args:
+        - user=fhariano
+        - uid=1000
+      context: ./
+      dockerfile: dockerfile
+    environment: 
+      TZ: "${TZ:-America/Sao_Paulo}"
+    image: laravel-app
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - ./:/var/www
+    depends_on:
+      - redis_notification
+      - queue
+    networks:
+      - nethorizon
+  
+  # nginx
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - 443:443
+      - 80:80
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/:/etc/nginx/conf.d/
+      - ./docker/nginx/ssl:/etc/nginx/ssl/
+    networks:
+      - nethorizon
+
+  # mysql micro_notification
+  db_micro_notification:
+    image: mysql:8
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+    volumes:
+      - ./.docker/mysql/dbdata:/var/lib/mysql
+    ports: 
+      - 3360:3306
+    networks:
+      - nethorizon
+
+  # queue micro horizon
+  queue:
+    build:
+      args:
+        - user=fhariano
+        - uid=1000
+      context: ./
+      dockerfile: dockerfile
+    restart: unless-stopped
+    working_dir: /var/www/
+    command: "php artisan queue:work"
+    volumes:
+      - ./:/var/www
+    depends_on: 
+      - redis_notification
+    networks:
+      - nethorizon
+
+  # redis
+  redis_notification:
+    image: redis:latest
+    networks:
+      - nethorizon
+
+networks:
+  nethorizon:
+    driver: bridge
