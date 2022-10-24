@@ -2,12 +2,15 @@
 
 namespace App\Jobs;
 
+use App\Http\Controllers\Mails\EmailJobController;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
+use Twilio\Exceptions\TwilioException;
 use Twilio\Rest\Client;
 
 class SendSms implements ShouldQueue
@@ -42,13 +45,18 @@ class SendSms implements ShouldQueue
         $receiver = $details["to"];
         $message = $details["message"];
         $twilio_number = config('twilio.from_phone_number');
-
-        $this->twilioClient->messages->create(
-            $receiver,
-            array(
-                'from' => $twilio_number,
-                'body' => $message
-            )
-        );
+        try {
+            $this->twilioClient->messages->create(
+                $receiver,
+                array(
+                    'from' => $twilio_number,
+                    'body' => $message
+                )
+            );
+        } catch (TwilioException $e) {
+            Log::channel('notification')->error($e->getMessage());
+            (new EmailJobController)->sendMessage('fhariano@gmail.com', '[Muqruirana\'s Bar] ERROR SEND SMS', $e->getMessage());
+            return $e;
+        }
     }
 }

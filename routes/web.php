@@ -1,8 +1,5 @@
 <?php
 
-use App\Http\Controllers\Mails\EmailJobController;
-use App\Http\Controllers\Redis\RedisController;
-use App\Http\Controllers\Sms\SmsJobController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -20,11 +17,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return redirect('horizon');
 })->middleware('auth');
+Route::get('home', function () {
+    return redirect('horizon');
+})->middleware('auth');
 
 Auth::routes();
-
-Route::get('send-email', [EmailJobController::class, 'enqueue']);
-Route::get('send-sms', [SmsJobController::class, 'enqueue']);
-Route::get('redis-clear', [RedisController::class, 'clearRedis']);
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

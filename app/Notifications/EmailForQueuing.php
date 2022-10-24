@@ -14,6 +14,7 @@ class EmailForQueuing extends Mailable
     use Queueable, SerializesModels;
 
     protected $details;
+    public $subject;
 
     /**
      * Create a new message instance.
@@ -23,6 +24,7 @@ class EmailForQueuing extends Mailable
     public function __construct($details)
     {
         $this->details = $details;
+        $this->subject = $details['subject'];
     }
 
     /**
@@ -33,7 +35,7 @@ class EmailForQueuing extends Mailable
     public function build()
     {
         return $this->from(config('mail.from.address'), config('mail.from.name'))
-            ->subject('[Muquirana\'s Bar] Código de Verificação: '.$this->details['code'])
+            ->subject($this->details['subject'])
             ->view('mails.email')
             ->with($this->details);
     }

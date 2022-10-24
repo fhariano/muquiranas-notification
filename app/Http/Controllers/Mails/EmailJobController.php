@@ -17,7 +17,13 @@ class EmailJobController extends Controller
      */
     public function enqueue(Request $request)
     {
-        $details = ['email' => $request->email, 'code' => $request->code];
+        $details = ['email' => $request->email, 'subject' => $request->subject, 'body' => $request->message];
+        SendEmail::dispatch($details)->onQueue('emails');
+    }
+
+    public function sendMessage($email, $subject, $message)
+    {
+        $details = ['email' => $email, 'subject' => $subject, 'body' => $message];
         SendEmail::dispatch($details)->onQueue('emails');
     }
 }

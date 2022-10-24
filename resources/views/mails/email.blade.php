@@ -7,7 +7,7 @@
 
 <body>
     <p><b>Muquirana's Bar</b></p>
-    <p>Seu código de verificação é: {{$code}}</p>
+    <p>{!! $body !!}</p>
 </body>
 
 </html>
