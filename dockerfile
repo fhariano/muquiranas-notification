@@ -37,3 +37,6 @@ RUN pecl install -o -f redis \
 WORKDIR /var/www
 
 USER $user
+
+COPY /docker/run.sh /tmp
+ENTRYPOINT ["/tmp/run.sh"]

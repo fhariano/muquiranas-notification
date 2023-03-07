@@ -20,7 +20,6 @@ services:
       - queue
     networks:
       - nethorizon
-    entrypoint: [ "bash", "-c", "php artisan horizon"]
   
   # nginx
   nginx:
