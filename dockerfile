@@ -38,5 +38,5 @@ WORKDIR /var/www
 
 USER $user
 
-COPY /docker/run.sh /tmp
-ENTRYPOINT ["/tmp/run.sh"]
+# COPY /docker/run.sh /tmp
+# ENTRYPOINT ["/tmp/run.sh"]
